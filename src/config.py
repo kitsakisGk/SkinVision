@@ -3,13 +3,14 @@ SkinVision — Configuration
 All paths, hyperparameters, and class definitions in one place.
 """
 
+import os
 from pathlib import Path
 
 # ============================================================
 # Paths — Auto-detects Kaggle vs Local
 # ============================================================
 KAGGLE_DATA = Path("/kaggle/input/skin-cancer-mnist-ham10000")
-IS_KAGGLE = KAGGLE_DATA.exists()
+IS_KAGGLE = "KAGGLE_KERNEL_RUN_TYPE" in os.environ
 
 if IS_KAGGLE:
     # Running on Kaggle Notebooks
