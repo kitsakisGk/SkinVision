@@ -1,0 +1,33 @@
+# Data — too large for git
+data/
+*.csv
+*.zip
+
+# Model weights
+models/*.pth
+models/*.pt
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+venv/
+env/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# wandb
+wandb/
+
+# Misc
+*.log
