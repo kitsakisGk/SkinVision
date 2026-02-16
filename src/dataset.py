@@ -52,20 +52,33 @@ class HAM10000Dataset(Dataset):
     """
     PyTorch Dataset for HAM10000.
 
-    Expects:
-        - metadata_df: DataFrame with columns ['image_id', 'dx'] at minimum
-        - image_dir: path to folder containing the .jpg images
-        - transform: albumentations transform
+    Supports images split across multiple directories (part_1, part_2).
     """
 
-    def __init__(self, metadata_df, image_dir, transform=None):
+    def __init__(self, metadata_df, image_dirs, transform=None):
+        """
+        Args:
+            metadata_df: DataFrame with columns ['image_id', 'dx']
+            image_dirs: list of Path objects to folders containing .jpg images
+            transform: albumentations transform
+        """
         self.df = metadata_df.reset_index(drop=True)
-        self.image_dir = Path(image_dir)
         self.transform = transform
 
         # Encode labels as integers
         self.label_map = {name: idx for idx, name in enumerate(CLASS_NAMES)}
         self.df["label"] = self.df["dx"].map(self.label_map)
+
+        # Build image path lookup from all directories
+        self.image_path_map = {}
+        if isinstance(image_dirs, (str, Path)):
+            image_dirs = [Path(image_dirs)]
+        for d in image_dirs:
+            d = Path(d)
+            if d.exists():
+                for f in d.iterdir():
+                    if f.suffix == ".jpg":
+                        self.image_path_map[f.stem] = f
 
     def __len__(self):
         return len(self.df)
@@ -75,8 +88,8 @@ class HAM10000Dataset(Dataset):
         image_id = row["image_id"]
         label = row["label"]
 
-        # Load image
-        img_path = self.image_dir / f"{image_id}.jpg"
+        # Load image from path map
+        img_path = self.image_path_map[image_id]
         image = np.array(Image.open(img_path).convert("RGB"))
 
         # Apply transforms
@@ -85,59 +98,3 @@ class HAM10000Dataset(Dataset):
             image = augmented["image"]
 
         return image, label
-
-
-def prepare_dataloaders(metadata_path, image_dir, test_size=0.15, val_size=0.15):
-    """
-    Splits data into train/val/test with stratification and returns DataLoaders.
-
-    Args:
-        metadata_path: path to HAM10000_metadata.csv
-        image_dir: path to folder with images
-        test_size: fraction for test set
-        val_size: fraction for validation set (from remaining after test)
-
-    Returns:
-        train_loader, val_loader, test_loader, class_weights
-    """
-    df = pd.read_csv(metadata_path)
-
-    # Stratified split: first split off test, then split remaining into train/val
-    train_val_df, test_df = train_test_split(
-        df, test_size=test_size, stratify=df["dx"], random_state=SEED
-    )
-    val_fraction = val_size / (1 - test_size)
-    train_df, val_df = train_test_split(
-        train_val_df, test_size=val_fraction, stratify=train_val_df["dx"], random_state=SEED
-    )
-
-    print(f"Train: {len(train_df)} | Val: {len(val_df)} | Test: {len(test_df)}")
-
-    # Create datasets
-    train_dataset = HAM10000Dataset(train_df, image_dir, transform=get_transforms("train"))
-    val_dataset = HAM10000Dataset(val_df, image_dir, transform=get_transforms("val"))
-    test_dataset = HAM10000Dataset(test_df, image_dir, transform=get_transforms("test"))
-
-    # Compute class weights for imbalanced data
-    label_counts = train_df["dx"].value_counts()
-    total = len(train_df)
-    class_weights = torch.tensor(
-        [total / (len(CLASS_NAMES) * label_counts.get(c, 1)) for c in CLASS_NAMES],
-        dtype=torch.float32,
-    )
-
-    # Create dataloaders
-    train_loader = DataLoader(
-        train_dataset, batch_size=BATCH_SIZE, shuffle=True, num_workers=NUM_WORKERS,
-        pin_memory=True, drop_last=True,
-    )
-    val_loader = DataLoader(
-        val_dataset, batch_size=BATCH_SIZE, shuffle=False, num_workers=NUM_WORKERS,
-        pin_memory=True,
-    )
-    test_loader = DataLoader(
-        test_dataset, batch_size=BATCH_SIZE, shuffle=False, num_workers=NUM_WORKERS,
-        pin_memory=True,
-    )
-
-    return train_loader, val_loader, test_loader, class_weights
