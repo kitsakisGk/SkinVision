@@ -99,7 +99,7 @@ def train_model(
         filter(lambda p: p.requires_grad, model.parameters()), lr=lr
     )
     scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(
-        optimizer, mode="min", factor=0.5, patience=3, verbose=True
+        optimizer, mode="min", factor=0.5, patience=3
     )
 
     # Track history
