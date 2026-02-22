@@ -44,10 +44,10 @@ jobs:
           cache: pip
 
       - name: Install dependencies
-        run: pip install -r requirements-dev.txt
+        run: pip install -r config/requirements-dev.txt
 
       - name: Run tests
-        run: pytest tests/ -v --tb=short
+        run: pytest -c config/pytest.ini tests/ -v --tb=short
 
       - name: Upload coverage report
         if: always()
