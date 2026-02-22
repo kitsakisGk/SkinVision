@@ -7,9 +7,7 @@ import pandas as pd
 from pathlib import Path
 from PIL import Image
 
-import torch
-from torch.utils.data import Dataset, DataLoader
-from sklearn.model_selection import train_test_split
+from torch.utils.data import Dataset
 
 import albumentations as A
 from albumentations.pytorch import ToTensorV2
@@ -17,7 +15,7 @@ from albumentations.pytorch import ToTensorV2
 import numpy as np
 
 from src.config import (
-    IMAGE_SIZE, BATCH_SIZE, NUM_WORKERS, SEED,
+    IMAGE_SIZE,
     IMAGENET_MEAN, IMAGENET_STD, CLASS_NAMES,
 )
 

@@ -6,26 +6,26 @@ Upload a dermatoscopic image → get prediction + Grad-CAM heatmap.
 import sys
 from pathlib import Path
 
-# Allow imports from project root
+# Allow imports from project root — must come before src imports  # noqa: E402
 APP_DIR = Path(__file__).resolve().parent
 PROJECT_ROOT = APP_DIR.parent
 sys.path.insert(0, str(PROJECT_ROOT))
 
-import torch
-import numpy as np
-import cv2
-import gradio as gr
-from PIL import Image
-import albumentations as A
-from albumentations.pytorch import ToTensorV2
+import torch  # noqa: E402
+import numpy as np  # noqa: E402
+import cv2  # noqa: E402
+import gradio as gr  # noqa: E402
+from PIL import Image  # noqa: E402
+import albumentations as A  # noqa: E402
+from albumentations.pytorch import ToTensorV2  # noqa: E402
 
-from src.config import (
+from src.config import (  # noqa: E402
     CLASS_NAMES, CLASS_LABELS, NUM_CLASSES,
     IMAGE_SIZE, MODEL_NAME, MODELS_DIR,
     IMAGENET_MEAN, IMAGENET_STD,
 )
-from src.model import create_model
-from src.gradcam import GradCAM, overlay_heatmap
+from src.model import create_model  # noqa: E402
+from src.gradcam import GradCAM, overlay_heatmap  # noqa: E402
 
 # ── Load model ──────────────────────────────────────────────
 device = torch.device("cpu")
@@ -87,9 +87,11 @@ Upload a dermatoscopic image to classify it into one of **7 skin conditions** us
 
 The model also shows a **Grad-CAM heatmap** highlighting where it's looking.
 
-**Classes:** Actinic Keratosis, Basal Cell Carcinoma, Benign Keratosis, Dermatofibroma, Melanoma, Melanocytic Nevus, Vascular Lesion
+**Classes:** Actinic Keratosis, Basal Cell Carcinoma, Benign Keratosis,
+Dermatofibroma, Melanoma, Melanocytic Nevus, Vascular Lesion
 
-> **Disclaimer:** This is a demo project, NOT a medical diagnostic tool. Always consult a dermatologist.
+> **Disclaimer:** This is a demo project, NOT a medical diagnostic tool.
+> Always consult a dermatologist.
 """
 
 demo = gr.Interface(

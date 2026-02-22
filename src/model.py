@@ -4,8 +4,6 @@ EfficientNet-based classifier using the timm library.
 """
 
 import timm
-import torch
-import torch.nn as nn
 
 from src.config import NUM_CLASSES, MODEL_NAME, PRETRAINED
 

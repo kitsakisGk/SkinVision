@@ -7,9 +7,8 @@ import torch
 import numpy as np
 import matplotlib.pyplot as plt
 import cv2
-from PIL import Image
 
-from src.config import CLASS_NAMES, CLASS_LABELS, IMAGENET_MEAN, IMAGENET_STD, IMAGE_SIZE
+from src.config import CLASS_NAMES, CLASS_LABELS, IMAGE_SIZE
 
 
 class GradCAM:

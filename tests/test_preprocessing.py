@@ -3,7 +3,6 @@
 import numpy as np
 import torch
 import pytest
-from pathlib import Path
 from PIL import Image
 
 

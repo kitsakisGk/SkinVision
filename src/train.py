@@ -6,7 +6,6 @@ Handles training, validation, early stopping, and checkpointing.
 import torch
 import torch.nn as nn
 from tqdm import tqdm
-from pathlib import Path
 import copy
 
 from src.config import (

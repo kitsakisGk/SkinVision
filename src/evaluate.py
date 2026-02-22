@@ -12,7 +12,6 @@ from sklearn.metrics import (
     confusion_matrix,
     roc_curve,
     auc,
-    f1_score,
 )
 from tqdm import tqdm
 
