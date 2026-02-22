@@ -1,0 +1,64 @@
+name: Deploy to Hugging Face Spaces
+
+on:
+  push:
+    branches: [master, main]
+    paths:
+      - "app/**"
+      - "src/**"
+      - "hf_spaces/**"
+      - "models/best_model.pth"
+
+jobs:
+  deploy:
+    name: Push to HF Spaces
+    runs-on: ubuntu-latest
+    # Only runs when HF_TOKEN secret is configured
+    if: ${{ secrets.HF_TOKEN != '' }}
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          lfs: true
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+
+      - name: Install huggingface_hub
+        run: pip install huggingface_hub
+
+      - name: Push to Hugging Face Spaces
+        env:
+          HF_TOKEN: ${{ secrets.HF_TOKEN }}
+          # Change this to YOUR_USERNAME/SkinVision after creating the Space
+          HF_SPACE_ID: kitsakisGk/SkinVision
+        run: |
+          python - <<'EOF'
+          import os
+          from huggingface_hub import HfApi
+
+          api = HfApi(token=os.environ["HF_TOKEN"])
+          space_id = os.environ["HF_SPACE_ID"]
+
+          # Upload Space metadata and requirements
+          api.upload_folder(
+              folder_path="hf_spaces",
+              repo_id=space_id,
+              repo_type="space",
+              ignore_patterns=["DEPLOY.md"],
+          )
+
+          # Upload app and source
+          api.upload_folder(
+              folder_path=".",
+              repo_id=space_id,
+              repo_type="space",
+              allow_patterns=["app/app.py", "src/**/*.py"],
+              ignore_patterns=["**/__pycache__/**"],
+          )
+
+          print(f"Deployed to https://huggingface.co/spaces/{space_id}")
+          EOF

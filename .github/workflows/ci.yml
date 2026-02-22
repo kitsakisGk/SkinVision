@@ -47,7 +47,7 @@ jobs:
         run: pip install -r config/requirements-dev.txt
 
       - name: Run tests
-        run: pytest -c config/pytest.ini tests/ -v --tb=short
+        run: pytest tests/ -v --tb=short
 
       - name: Upload coverage report
         if: always()

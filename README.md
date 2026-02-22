@@ -2,9 +2,11 @@
 
 **Deep Learning for Skin Condition Detection**
 
+[![CI](https://github.com/kitsakisGk/SkinVision/actions/workflows/ci.yml/badge.svg)](https://github.com/kitsakisGk/SkinVision/actions/workflows/ci.yml)
 [![Python](https://img.shields.io/badge/Python-3.10+-blue.svg)](https://python.org)
 [![PyTorch](https://img.shields.io/badge/PyTorch-2.0+-red.svg)](https://pytorch.org)
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
+[![HF Spaces](https://img.shields.io/badge/🤗%20Hugging%20Face-Spaces-yellow)](https://huggingface.co/spaces/kitsakisGk/SkinVision)
 
 > Classifies dermatoscopic images into 7 skin lesion categories using transfer learning (EfficientNet-B0), with Grad-CAM explainability and an interactive Gradio demo.
 
@@ -59,6 +61,22 @@
 
 ```
 SkinVision/
+├── .github/
+│   └── workflows/
+│       ├── ci.yml                   # Lint + unit tests on every push/PR
+│       └── deploy.yml               # Auto-deploy to Hugging Face Spaces
+│
+├── app/
+│   └── app.py                       # Gradio web demo
+│
+├── config/
+│   ├── pytest.ini                   # pytest configuration
+│   └── requirements-dev.txt         # Dev dependencies (pytest, flake8)
+│
+├── hf_spaces/
+│   ├── README.md                    # HF Spaces metadata header
+│   └── requirements.txt             # Minimal runtime deps for the Space
+│
 ├── notebooks/
 │   ├── 01_data_exploration.ipynb    # EDA — class distribution, samples, stats
 │   ├── 02_model_training.ipynb      # Transfer learning + two-phase training
@@ -74,12 +92,13 @@ SkinVision/
 │   ├── gradcam.py                   # Grad-CAM implementation
 │   └── preprocessing.py             # Image preprocessing
 │
-├── app/
-│   └── app.py                       # Gradio web demo
+├── tests/                           # Unit tests (pytest)
 │
 ├── data/HAM10000/                   # Dataset (not in git)
 ├── models/                          # Saved weights (not in git)
-└── results/                         # Generated charts
+├── results/                         # Generated charts
+├── pyproject.toml                   # Package metadata + tool config
+└── requirements.txt                 # Runtime dependencies
 ```
 
 ## Quick Start
@@ -89,7 +108,12 @@ SkinVision/
 ```bash
 git clone https://github.com/kitsakisGk/SkinVision.git
 cd SkinVision
+
+# Runtime only
 pip install -r requirements.txt
+
+# Or install as a package (editable)
+pip install -e .
 ```
 
 ### 2. Get the Data
